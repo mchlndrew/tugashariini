@@ -1,0 +1,14 @@
+{
+  "name": "mini-project-mvc-layered",
+  "version": "1.0.0",
+  "description": "Starter arsitektur MVC/Layered - Pertemuan 6-7 PAW II",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.7",
+    "express": "^4.22.3"
+  }
+}
