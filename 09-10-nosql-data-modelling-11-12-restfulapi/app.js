@@ -6,8 +6,21 @@ const mongoose = require('mongoose');
 const app = express();
 app.use(express.json());
 
+// Hindari lookup TXT mongodb+srv karena DNS pada jaringan tertentu memblokirnya.
+// Username/password tetap dibaca dari MONGODB_URI di .env.
+const atlasHosts = [
+  'ac-damjcga-shard-00-00.6zqolpf.mongodb.net',
+  'ac-damjcga-shard-00-01.6zqolpf.mongodb.net',
+  'ac-damjcga-shard-00-02.6zqolpf.mongodb.net'
+].join(',');
 
-mongoose.connect(process.env.MONGODB_URI, {
+const mongoUri = process.env.MONGODB_URI.replace(
+  /^mongodb\+srv:\/\/([^@]+)@[^/]+(\/.*)?$/,
+  (_, credentials, databasePath = '/') =>
+    `mongodb://${credentials}@${atlasHosts}${databasePath}${databasePath.includes('?') ? '&' : '?'}tls=true&authSource=admin&retryWrites=true&w=majority`
+);
+
+mongoose.connect(mongoUri, {
   serverSelectionTimeoutMS: 10000
 })
   .then(() => console.log('✅ Berhasil terhubung ke MongoDB Atlas'))
