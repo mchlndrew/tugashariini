@@ -1,13 +1,26 @@
 const Service = require('../models/serviceModel');
+const { buildSort, buildProjection, buildPagination } = require('../utils/queryOptions');
 
 exports.getAllServices = async (req, res) => {
   const filter = {};
   if (req.query.price) {
-    filter.price = req.query.price;
+    filter.price = Number(req.query.price);
   }
 
-  const data = await Service.find(filter).select('-__v');
-  res.status(200).json({ message: "Daftar Layanan", total: data.length, data });
+  if (req.query.name) {
+    filter.name = { $regex: req.query.name, $options: 'i' };
+  }
+
+  if (req.query.duration) {
+    filter.duration = { $regex: req.query.duration, $options: 'i' };
+  }
+
+  const sort = buildSort(req.query.sort, ['name', 'price', 'duration', 'createdAt', 'updatedAt'], 'name', req.query.order);
+  const projection = buildProjection(req.query.fields, ['_id', 'name', 'price', 'duration', 'createdAt', 'updatedAt']);
+  const { page, limit, skip } = buildPagination(req.query.page, req.query.limit);
+  const data = await Service.find(filter).sort(sort).skip(skip).limit(limit).select(projection);
+  const total = await Service.countDocuments(filter);
+  res.status(200).json({ message: "Daftar Layanan", total, page, limit, data });
 };
 
 exports.getServiceById = async (req, res) => {

@@ -1,11 +1,28 @@
 const Customer = require('../models/customerModel');
+const { buildSort, buildProjection, buildPagination } = require('../utils/queryOptions');
 
 // 1. GET ALL
 exports.getAllCustomers = async (req, res) => {
-  const data = await Customer.find().select('-__v');
+  const filter = {};
+
+  if (req.query.name) {
+    filter.name = { $regex: req.query.name, $options: 'i' };
+  }
+
+  if (req.query.phone) {
+    filter.phone = { $regex: req.query.phone, $options: 'i' };
+  }
+
+  const sort = buildSort(req.query.sort, ['name', 'phone', 'vehicleNumber', 'createdAt', 'updatedAt'], 'name', req.query.order);
+  const projection = buildProjection(req.query.fields, ['_id', 'name', 'phone', 'vehicleNumber', 'createdAt', 'updatedAt']);
+  const { page, limit, skip } = buildPagination(req.query.page, req.query.limit);
+  const data = await Customer.find(filter).sort(sort).skip(skip).limit(limit).select(projection);
+  const total = await Customer.countDocuments(filter);
   res.status(200).json({
     message: "Daftar pelanggan",
-    total: data.length,
+    total,
+    page,
+    limit,
     data
   });
 };

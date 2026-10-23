@@ -2,12 +2,13 @@ require('dotenv').config();
 require('express-async-errors');
 const express = require('express');
 const mongoose = require('mongoose');
+const { seedDatabase } = require('./config/seeder');
 
 const app = express();
+app.set('json spaces', 2);
 app.use(express.json());
 
-// Hindari lookup TXT mongodb+srv karena DNS pada jaringan tertentu memblokirnya.
-// Username/password tetap dibaca dari MONGODB_URI di .env.
+
 const atlasHosts = [
   'ac-damjcga-shard-00-00.6zqolpf.mongodb.net',
   'ac-damjcga-shard-00-01.6zqolpf.mongodb.net',
@@ -23,8 +24,14 @@ const mongoUri = process.env.MONGODB_URI.replace(
 mongoose.connect(mongoUri, {
   serverSelectionTimeoutMS: 10000
 })
-  .then(() => console.log('✅ Berhasil terhubung ke MongoDB Atlas'))
-  .catch((err) => console.error('❌ Gagal terhubung ke MongoDB Atlas:', err));
+  .then(() => console.log('[OK] Berhasil terhubung ke MongoDB Atlas'))
+  .catch((err) => console.error('[ERROR] Gagal terhubung ke MongoDB Atlas:', err));
+
+mongoose.connection.once('connected', () => {
+  seedDatabase()
+    .then(() => console.log('Data booking, customer, mechanic, dan service berhasil disiapkan'))
+    .catch((err) => console.error('Gagal menyiapkan data awal:', err));
+});
 
 const bookingRoutes = require('./routes/bookingRoutes');
 const customerRoutes = require('./routes/customerRoutes');
@@ -42,5 +49,5 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server MettaCareHub API berjalan di http://localhost:${PORT}`);
+  console.log(`[SERVER] MettaCareHub API berjalan di http://localhost:${PORT}`);
 });

@@ -8,7 +8,11 @@ const customerSchema = new mongoose.Schema({
   phone: {
     type: String,
     required: [true, 'Nomor HP wajib diisi'],
-    unique: true // Mencegah nomor HP ganda
+    unique: true
+  },
+  vehicleNumber: {
+    type: String,
+    required: true
   }
 }, { timestamps: true });
 

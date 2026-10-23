@@ -1,4 +1,5 @@
 const Mechanic = require('../models/mechanicModel');
+const { buildSort, buildProjection, buildPagination } = require('../utils/queryOptions');
 
 exports.getAllMechanics = async (req, res) => {
   const filter = {};
@@ -6,8 +7,20 @@ exports.getAllMechanics = async (req, res) => {
     filter.status = req.query.status;
   }
 
-  const data = await Mechanic.find(filter).select('-__v');
-  res.status(200).json({ message: "Daftar Mekanik", total: data.length, data });
+  if (req.query.name) {
+    filter.name = { $regex: req.query.name, $options: 'i' };
+  }
+
+  if (req.query.specialty) {
+    filter.specialty = { $regex: req.query.specialty, $options: 'i' };
+  }
+
+  const sort = buildSort(req.query.sort, ['name', 'specialty', 'status', 'createdAt', 'updatedAt'], 'name', req.query.order);
+  const projection = buildProjection(req.query.fields, ['_id', 'name', 'specialty', 'status', 'createdAt', 'updatedAt']);
+  const { page, limit, skip } = buildPagination(req.query.page, req.query.limit);
+  const data = await Mechanic.find(filter).sort(sort).skip(skip).limit(limit).select(projection);
+  const total = await Mechanic.countDocuments(filter);
+  res.status(200).json({ message: "Daftar Mekanik", total, page, limit, data });
 };
 
 exports.getMechanicById = async (req, res) => {

@@ -4,7 +4,8 @@
   "description": "Mini project NoSQL Data Modeling dengan MongoDB & Mongoose - Pertemuan 9-10 PAW II",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "seed": "node config/seeder.js"
   },
   "dependencies": {
     "dotenv": "^16.4.5",

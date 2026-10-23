@@ -1,4 +1,5 @@
 const Booking = require('../models/bookingModel');
+const { buildSort, buildProjection, buildPagination } = require('../utils/queryOptions');
 
 
 exports.getAllBookings = async (req, res) => {
@@ -7,17 +8,32 @@ exports.getAllBookings = async (req, res) => {
         filter.status = req.query.status;
     }
 
-    const page = parseInt(req.query.page) || 1;
-    let limit = parseInt(req.query.limit) || 10;
-    if (limit > 50) limit = 50;
+    if (req.query.customerId) {
+        filter.customerId = Number(req.query.customerId);
+    }
 
-    const sortField = req.query.sort || 'createdAt';
+    if (req.query.serviceId) {
+        filter.serviceId = Number(req.query.serviceId);
+    }
+
+    if (req.query.vehicleNumber) {
+        filter.vehicleNumber = { $regex: req.query.vehicleNumber, $options: 'i' };
+    }
+
+    const { page, limit, skip } = buildPagination(req.query.page, req.query.limit);
+
+    const sort = buildSort(req.query.sort, [
+        'customerId', 'serviceId', 'vehicleNumber', 'bookingDate', 'status', 'createdAt', 'updatedAt'
+    ], 'createdAt', req.query.order);
+    const projection = buildProjection(req.query.fields, [
+        '_id', 'customerId', 'serviceId', 'vehicleNumber', 'bookingDate', 'status', 'createdAt', 'updatedAt'
+    ]);
 
     const data = await Booking.find(filter)
-        .sort({ [sortField]: 1 })
-        .skip((page - 1) * limit)
+        .sort(sort)
+        .skip(skip)
         .limit(limit)
-        .select('-__v');
+        .select(projection);
 
     const total = await Booking.countDocuments(filter);
 
