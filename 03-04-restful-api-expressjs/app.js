@@ -3,11 +3,11 @@ const app = express();
 
 const PORT = 3000;
 
-// Middleware
-app.use(express.json());
-app.set('json spaces', 2); // Merapikan format tampilan JSON
 
-// Data In-Memory Array (3 Data awal)
+app.use(express.json());
+app.set('json spaces', 2); 
+
+
 let bookings = [
   {
     id: 1,
@@ -52,7 +52,7 @@ let bookings = [
   }
 ];
 
-// 1. READ ALL BOOKINGS (Bisa filter via query: /api/bookings?status=Pending)
+
 app.get('/api/bookings', (req, res) => {
   const { status } = req.query;
 
@@ -74,7 +74,7 @@ app.get('/api/bookings', (req, res) => {
   });
 });
 
-// 2. READ BY STATUS ENDPOINT (misal: /api/bookings/status/Pending)
+
 app.get('/api/bookings/status/:status', (req, res) => {
   const targetStatus = req.params.status.toLowerCase();
   const filtered = bookings.filter(b => b.status.toLowerCase() === targetStatus);

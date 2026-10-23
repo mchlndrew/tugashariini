@@ -1,0 +1,19 @@
+{
+  "name": "mini-project-nosql-data-modeling",
+  "version": "1.0.0",
+  "description": "Mini project NoSQL Data Modeling dengan MongoDB & Mongoose - Pertemuan 9-10 PAW II",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.22.3",
+    "express-async-errors": "^3.1.1",
+    "mongoose": "^8.24.6"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

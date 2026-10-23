@@ -14,7 +14,7 @@ function getById(id) {
   return customers.find((item) => item.id === id);
 }
 
-// Tambahkan fungsi ini agar controller bisa mencari pelanggan berdasarkan No HP
+
 function findByPhone(phone) {
   return customers.find((item) => item.phone === phone);
 }
@@ -44,5 +44,4 @@ function remove(id) {
   return deleted;
 }
 
-// Jangan lupa daftarkan findByPhone di exports
 module.exports = { getAll, getById, findByPhone, create, update, remove };
