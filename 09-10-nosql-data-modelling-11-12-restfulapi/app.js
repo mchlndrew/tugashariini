@@ -2,6 +2,7 @@ require('dotenv').config();
 require('express-async-errors');
 const express = require('express');
 const mongoose = require('mongoose');
+const authRoutes = require('./routes/authRoutes');
 const { seedDatabase } = require('./config/seeder');
 
 const app = express();
@@ -38,6 +39,8 @@ const customerRoutes = require('./routes/customerRoutes');
 const serviceRoutes = require('./routes/serviceRoutes');
 const mechanicRoutes = require('./routes/mechanicRoutes');
 
+
+app.use('/auth', authRoutes);
 app.use('/bookings', bookingRoutes);
 app.use('/customers', customerRoutes);
 app.use('/services', serviceRoutes);

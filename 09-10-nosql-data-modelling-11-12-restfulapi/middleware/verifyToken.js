@@ -1,0 +1,16 @@
+const jwt = require("jsonwebtoken");
+
+function verifyToken(req, res, next) {
+    const header = req.headers.authorization;
+    if (!header) throw { status: 401, message: "Token tidak ditemukan" };
+
+    const token = header.split(" ")[1];
+    try {
+        req.user = jwt.verify(token, process.env.JWT_SECRET);
+        next();
+    } catch (err) {
+        throw { status: 401, message: "Token tidak valid/kedaluwarsa" };
+    }
+}
+
+module.exports = verifyToken;
